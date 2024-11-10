@@ -5,6 +5,7 @@ require("dotenv").config();
 const express = require('express');
 const connectDB = require('./config/db');
 const productRoutes = require('./routes/productRoutes');
+const rateLimiter = require('./middleware/rateLimiter');
 
 // init the expressjs app to app variable
 const app = express();
@@ -14,6 +15,9 @@ connectDB();
 
 // middleware for json parsing
 app.use(express.json());
+
+// ratelimiter
+app.use(rateLimiter);
 
 // Routes
 app.use("/api/products", productRoutes);
