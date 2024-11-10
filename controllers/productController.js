@@ -32,3 +32,34 @@ exports.getProduct = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+
+// Get all products with search and filtering
+exports.getProducts = async (req, res) => {
+    try {
+        const { category, name, minPrice, maxPrice } = req.query;
+        let query = {};
+
+        // check if name, category, min and max price exists or matches
+        if (category) {
+            query.category = category;
+        }
+        if (name) {
+            // case insensitive search
+            query.name = new RegExp(name, 'i'); 
+        }
+        if (minPrice || maxPrice) {
+            query.price = {};
+            if (minPrice) {
+                query.price.$gte = minPrice;
+            }
+            if (maxPrice) {
+                query.price.$lte = maxPrice;
+            }
+        }
+
+        const products = await Product.find(query);
+        res.json(products);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
